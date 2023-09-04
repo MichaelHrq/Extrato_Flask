@@ -14,7 +14,8 @@ def post():
     try:
         pdf_file = request.files['file[]']
         words_filter = request.form
-        extrato = Extrato(pdf_file, words_filter)
+        extrato,list_words = Extrato(pdf_file, words_filter)
+        
         return extrato
 
     except Exception as e:

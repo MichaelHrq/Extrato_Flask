@@ -3,10 +3,12 @@ import PyPDF2
 import re
 
 def Extrato(pdf_file, words_filter):
-
+    
     phrase_filter = ''
     dict_words = dict(words_filter)
-    for i, word in enumerate(dict_words.values()):
+    list_words = list(dict_words.values())
+    
+    for i, word in enumerate(list_words):
         if (i == len(dict_words)-1) : 
             phrase_filter = phrase_filter + ' ' + word.lower() + ' '
         else : 
@@ -99,12 +101,12 @@ def Extrato(pdf_file, words_filter):
     for item in filtro:
         padrao = re.compile(r'\d{2}/\d{2}/\d{4}|[a-z][a-z\s\.]+[a-z]|-[0-9.,]+\s')
         teste = re.findall(padrao, item)
-        extrato.append([
-            teste[0], 
-            teste[1], 
-            float(teste[2][1:].replace('.', '').replace(',', '.'))
-        ])
+        extrato.append({ 
+            "nome": teste[1],
+            "data": teste[0], 
+            "valor": float(teste[2][1:].replace('.', '').replace(',', '.'))
+        })
         
     # Crio a array com [dia, historico, valor] para cada elemento restante
 
-    return extrato
+    return extrato, list_words
