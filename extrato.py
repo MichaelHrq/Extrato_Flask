@@ -30,6 +30,26 @@ def Extrato(pdf_file, words_filter):
         subtext = re.sub(padrao, ' ', subtext)
         text.append(subtext)
 
+    # Jogo as paginas do pdf em uma array
+
+    def nome (n):
+        array = n.split(" ")
+        array.pop(0)
+        array.pop(-1)
+        return (' '.join(array)).title()
+
+    padrao = re.compile(r'^[a-z]+\s|nome:[a-z\s]+extrato|agência: [\d]+|conta: [\d-]+')
+    banco = re.findall(padrao,text[0])
+
+    infos = {
+        'banco': banco[0].title(),
+        'nome': nome(banco[1]),
+        'agencia': banco[2],
+        'conta': banco[3]
+    }
+
+    # Separo as informaçoes do cliente
+
     for i in range(number_of_pages):
         padrao = re.compile('bradesco[\s\w\W]+saldo \(r\$\)')
         titulo = re.findall(padrao, text[i])
@@ -40,7 +60,7 @@ def Extrato(pdf_file, words_filter):
     for txt in text:
         texto = texto + txt
 
-    # Coloco todas as paginas do extrato na lista text[] e depois coloco tudo na string texto
+    # Junto todas as paginas em uma so string
 
     padrao = re.compile('\d{2}/\d{2}/\d{4}')
 
@@ -97,6 +117,7 @@ def Extrato(pdf_file, words_filter):
     # Aplico mais uma vez as palavras filtro
 
     extrato = []
+    nomes = []
 
     for item in filtro:
         padrao = re.compile(r'\d{2}/\d{2}/\d{4}|[a-z][a-z\s\.]+[a-z]|-[0-9.,]+\s')
@@ -106,7 +127,10 @@ def Extrato(pdf_file, words_filter):
             "data": teste[0], 
             "valor": float(teste[2][1:].replace('.', '').replace(',', '.'))
         })
+        nomes.append(teste[1])
+    
+    list_words = list(set(nomes))
         
     # Crio a array com [dia, historico, valor] para cada elemento restante
 
-    return extrato, list_words
+    return extrato, list_words, infos
